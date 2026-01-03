@@ -1,6 +1,10 @@
 # Compiler files
 cache/
 out/
+foundry.lock
+
+# Submodules (managed by git)
+lib/
 
 # Ignores development broadcast logs
 !/broadcast
