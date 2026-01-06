@@ -26,7 +26,7 @@ contract StakeFlowVault is Ownable, ReentrancyGuard {
     uint256 public constant SECONDS_PER_YEAR = 365 days;
     uint256 public constant REWARD_DENOMINATOR = 10_000;
 
-    uint256 public rewardIndex = 1 * 10**18;
+    uint256 public rewardIndex = 1 * 10 ** 18;
     uint256 public lastUpdateTime;
     uint256 public totalStaked;
 
@@ -75,7 +75,7 @@ contract StakeFlowVault is Ownable, ReentrancyGuard {
         }
 
         stakingToken.safeTransferFrom(msg.sender, address(this), amount);
-        
+
         userStake.amount += amount;
         userStake.timestamp = block.timestamp;
         userStake.rewardIndex = rewardIndex;
@@ -100,7 +100,7 @@ contract StakeFlowVault is Ownable, ReentrancyGuard {
 
         userStake.amount -= amount;
         totalStaked -= amount;
-        
+
         if (userStake.amount == 0) {
             delete stakes[msg.sender];
         } else {
@@ -133,7 +133,7 @@ contract StakeFlowVault is Ownable, ReentrancyGuard {
         if (userStake.amount == 0) return 0;
 
         uint256 currentIndex = rewardIndex;
-        
+
         uint256 timeElapsed = block.timestamp - lastUpdateTime;
         if (totalStaked > 0 && timeElapsed > 0) {
             uint256 pendingRewards = (totalStaked * REWARD_RATE * timeElapsed) / (REWARD_DENOMINATOR * SECONDS_PER_YEAR);
@@ -144,11 +144,11 @@ contract StakeFlowVault is Ownable, ReentrancyGuard {
         return (userStake.amount * indexDifference) / 1e18;
     }
 
-    function getStakerInfo(address user) external view returns (
-        uint256 stakedAmount,
-        uint256 stakedTimestamp,
-        uint256 pendingRewardAmount
-    ) {
+    function getStakerInfo(address user)
+        external
+        view
+        returns (uint256 stakedAmount, uint256 stakedTimestamp, uint256 pendingRewardAmount)
+    {
         Stake memory userStake = stakes[user];
         stakedAmount = userStake.amount;
         stakedTimestamp = userStake.timestamp;

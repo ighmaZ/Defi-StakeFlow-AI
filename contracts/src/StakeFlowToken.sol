@@ -20,8 +20,9 @@ contract StakeFLowToken is ERC20, Ownable {
     event MinterRemoved(address indexed minter);
 
     modifier onlyMinter() {
-        if (!minters[msg.sender] && msg.sender != owner())
+        if (!minters[msg.sender] && msg.sender != owner()) {
             revert NotAuthorizedMinter();
+        }
         _;
     }
 
