@@ -58,6 +58,8 @@ export function useStakeFlow() {
         toast.success("transaction submitted", {
           description: `Hash: ${hash.slice(0, 10)}...`,
         });
+        queryClient.invalidateQueries({ queryKey: ["balanceOf"] });
+        queryClient.invalidateQueries({ queryKey: ["getStakerInfo"] });
       },
       onError: (error) => {
         toast.error("transaction failed", {
@@ -85,9 +87,8 @@ export function useStakeFlow() {
       functionName: "stake",
       args: [amount],
     });
+
   };
-  queryClient.invalidateQueries({ queryKey: ["balanceOf"] });
-  queryClient.invalidateQueries({ queryKey: ["getStakerInfo"] });
 
   // Unstake tokens
   const unstake = (amount: bigint) => {
@@ -98,7 +99,6 @@ export function useStakeFlow() {
       args: [amount],
     });
 
-    queryClient.invalidateQueries({ queryKey: ["getStakerInfo"] });
   };
 
   // Claim rewards
@@ -110,8 +110,7 @@ export function useStakeFlow() {
       args: [],
     });
 
-    queryClient.invalidateQueries({ queryKey: ["balanceOf"] });
-    queryClient.invalidateQueries({ queryKey: ["getStakerInfo"] });
+
   };
 
   return {
