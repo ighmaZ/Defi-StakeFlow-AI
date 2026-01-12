@@ -93,19 +93,9 @@ export function useAI() {
     []
   );
 
-  const clearMessages = useCallback(() => {
-    // Cancel any pending request when clearing
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    setMessages([{ ...INITIAL_MESSAGE, timestamp: Date.now() }]);
-    setIsLoading(false);
-  }, []);
-
   return {
     messages,
     sendMessage,
-    clearMessages,
     isLoading,
   };
 }
