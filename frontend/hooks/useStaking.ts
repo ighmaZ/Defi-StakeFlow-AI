@@ -2,11 +2,11 @@ import {
   STAKE_FLOW_VAULT_ADDRESS,
   STAKEFLOW_VAULT_ABI,
 } from "@/config/contracts";
-import { useConnection, useReadContract } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { StakerInfo } from "@/types";
 
 export function useStaking() {
-  const { address, isConnected } = useConnection();
+  const { address, isConnected } = useAccount();
 
   //fetch staked amount
 

@@ -3,14 +3,14 @@ import {
   STAKE_FLOW_VAULT_ADDRESS,
   STAKEFLOW_TOKEN_ABI,
   STAKEFLOW_VAULT_ABI,
+  CHAIN_ID,
 } from "@/config/contracts";
 import { toast } from "sonner";
-import { StakerInfo } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { useConnection, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
 export function useStakeFlow() {
-  const { address, isConnected } = useConnection();
+  const { address, isConnected } = useAccount();
 
   const queryClient = useQueryClient();
 
@@ -20,6 +20,7 @@ export function useStakeFlow() {
     abi: STAKEFLOW_TOKEN_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
+    chainId: CHAIN_ID,
     query: {
       enabled: !!address && isConnected,
       refetchInterval: 15000,
@@ -32,14 +33,16 @@ export function useStakeFlow() {
     abi: STAKEFLOW_VAULT_ABI,
     functionName: "getStakerInfo",
     args: address ? [address] : undefined,
+    chainId: CHAIN_ID,
     query: {
       enabled: !!address && isConnected,
       refetchInterval: 10000,
     },
   });
-  const stakedInfo = stakerInfo as StakerInfo | undefined;
-  const stakedAmount = stakedInfo?.stakedAmount || 0n;
-  const pendingRewards = stakedInfo?.pendingRewardAmount || 0n;
+  // getStakerInfo returns: [stakedAmount, stakedTimestamp, pendingRewardAmount]
+  const stakerInfoArray = stakerInfo as readonly [bigint, bigint, bigint] | undefined;
+  const stakedAmount = stakerInfoArray?.[0] || 0n;
+  const pendingRewards = stakerInfoArray?.[2] || 0n;
 
   //check allowance (how much vault can spend)
   const { data: allowance } = useReadContract({
@@ -47,6 +50,7 @@ export function useStakeFlow() {
     abi: STAKEFLOW_TOKEN_ABI,
     functionName: "allowance",
     args: address ? [address, STAKE_FLOW_VAULT_ADDRESS] : undefined,
+    chainId: CHAIN_ID,
     query: {
       enabled: !!address && isConnected,
     },
@@ -87,7 +91,6 @@ export function useStakeFlow() {
       functionName: "stake",
       args: [amount],
     });
-
   };
 
   // Unstake tokens
@@ -98,7 +101,6 @@ export function useStakeFlow() {
       functionName: "unstake",
       args: [amount],
     });
-
   };
 
   // Claim rewards
@@ -109,8 +111,6 @@ export function useStakeFlow() {
       functionName: "claimRewards",
       args: [],
     });
-
-
   };
 
   return {

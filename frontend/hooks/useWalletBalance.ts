@@ -1,11 +1,12 @@
 import {
   STAKE_FLOW_TOKEN_ADDRESS,
   STAKEFLOW_TOKEN_ABI,
+  CHAIN_ID,
 } from "@/config/contracts";
-import { useConnection, useReadContract } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 
 export function useWalletBalance() {
-  const { address, isConnected } = useConnection();
+  const { address, isConnected } = useAccount();
 
   const {
     data: balance,
@@ -17,6 +18,7 @@ export function useWalletBalance() {
     abi: STAKEFLOW_TOKEN_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
+    chainId: CHAIN_ID,
     query: {
       enabled: !!address && isConnected,
       refetchInterval: 15000,
